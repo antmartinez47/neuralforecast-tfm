@@ -54,6 +54,12 @@ class BaseMultivariate(BaseModel):
         optimizer_kwargs=None,
         lr_scheduler=None,
         lr_scheduler_kwargs=None,
+        callbacks_monitor_metric="valid_loss",
+        callbacks_monitor_mode="min",
+        early_stop_min_delta=0.0,
+        modelcheckpoint_save_dir=".",
+        modelcheckpoint_filename="model",
+        callbacks_verbose=True,
         **trainer_kwargs,
     ):
         super().__init__(
@@ -69,6 +75,12 @@ class BaseMultivariate(BaseModel):
             stat_exog_list=stat_exog_list,
             max_steps=max_steps,
             early_stop_patience_steps=early_stop_patience_steps,
+            callbacks_monitor_metric=callbacks_monitor_metric,
+            callbacks_monitor_mode=callbacks_monitor_mode,
+            early_stop_min_delta=early_stop_min_delta,
+            modelcheckpoint_save_dir=modelcheckpoint_save_dir,
+            modelcheckpoint_filename=modelcheckpoint_filename,
+            callbacks_verbose=callbacks_verbose,
             **trainer_kwargs,
         )
 

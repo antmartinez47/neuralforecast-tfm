@@ -17,12 +17,15 @@ import torch
 import torch.nn as nn
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from neuralforecast.tsdataset import (
     TimeSeriesDataModule,
     BaseTimeSeriesDataset,
     _DistributedTimeSeriesDataModule,
 )
 from ..losses.pytorch import IQLoss
+
+from os.path import join
 
 # %% ../../nbs/common.base_model.ipynb 3
 @dataclass
@@ -81,6 +84,12 @@ class BaseModel(pl.LightningModule):
         stat_exog_list,
         max_steps,
         early_stop_patience_steps,
+        callbacks_monitor_metric,
+        callbacks_monitor_mode,
+        early_stop_min_delta,
+        modelcheckpoint_save_dir,
+        modelcheckpoint_filename,
+        callbacks_verbose,
         **trainer_kwargs,
     ):
         super().__init__()
@@ -171,6 +180,48 @@ class BaseModel(pl.LightningModule):
                 )
             )
 
+        # Callbacks
+        if early_stop_patience_steps > 0:
+            if "callbacks" not in trainer_kwargs:
+                trainer_kwargs["callbacks"] = []
+            trainer_kwargs["callbacks"].append(
+                EarlyStopping(
+                    monitor=callbacks_monitor_metric, # metric to be monitored
+                    min_delta=early_stop_min_delta, # minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than or equal to `min_delta`, will count as no improvement.
+                    patience=early_stop_patience_steps, # number of checks with no improvement after which training will be stopped. Under the default configuration, one check happens after every training epoch. However, the frequency of validation can be modified by setting various parameters on the ``Trainer``, for example ``check_val_every_n_epoch`` and ``val_check_interval``. It must be noted that the patience parameter counts the number of validation checks with no improvement, and not the number of training epochs. Therefore, with parameters ``check_val_every_n_epoch=10`` and ``patience=3``, the trainer will perform at least 40 training epochs before being stopped.
+                    verbose=callbacks_verbose, 
+                    mode=callbacks_monitor_mode, # one of ``'min'``, ``'max'``. In ``'min'`` mode, training will stop when the quantity monitored has stopped decreasing and in ``'max'`` mode it will stop when the quantity monitored has stopped increasing.
+                    strict=True, # whether to crash the training if `monitor` is not found in the validation metrics.
+                    check_finite=True, # When set ``True``, stops training when the monitor becomes NaN or infinite.
+                    stopping_threshold=None, # Stop training immediately once the monitored quantity reaches this threshold.
+                    divergence_threshold=None, # Stop training as soon as the monitored quantity becomes worse than this threshold.
+                    check_on_train_epoch_end=False, # whether to run early stopping at the end of the training epoch. If this is ``False``, then the check runs at the end of the validation.
+                    log_rank_zero_only=False, # When set ``True``, logs the status of the early stopping callback only for rank 0 process.
+                        )
+                    )
+        if modelcheckpoint_save_dir is not None:
+            if "callbacks" not in trainer_kwargs:
+                trainer_kwargs["callbacks"] = []
+            trainer_kwargs["callbacks"].append(
+                ModelCheckpoint(
+                    dirpath=modelcheckpoint_save_dir, # directory to save the model file.
+                    filename=modelcheckpoint_filename, # checkpoint filename. Can contain named formatting options to be auto-filled.
+                    monitor=callbacks_monitor_metric, # quantity to monitor. By default it is ``None`` which saves a checkpoint only for the last epoch.
+                    verbose=callbacks_verbose, 
+                    save_last=False, # When ``True``, saves a `last.ckpt` copy whenever a checkpoint file gets saved. This allows accessing the latest checkpoint in a deterministic manner.
+                    save_top_k=1, # the best k models according to the quantity monitored will be saved.
+                    save_weights_only=False, # if ``True``, then only the model's weights will be saved. Otherwise, the optimizer states, lr-scheduler states, etc are added in the checkpoint too.
+                    mode=callbacks_monitor_mode, 
+                    auto_insert_metric_name=True, 
+                    every_n_train_steps=None, # Number of training steps between checkpoints.
+                    train_time_interval=None, 
+                    every_n_epochs=None, # Number of training epochs between checkpoints.
+                    save_on_train_epoch_end=False, # Whether to run checkpointing at the end of the training epoch. If this is ``False``, then the check runs at the end of the validation.
+                    enable_version_counter=False # Whether to append a version to the existing file name. If this is ``False``, then the checkpoint files will be overwritten.
+                        )
+                    )
+            self.modelcheckpoint_path = join(modelcheckpoint_save_dir, f"{modelcheckpoint_filename}.ckpt")
+
         # Add GPU accelerator if available
         if trainer_kwargs.get("accelerator", None) is None:
             if torch.cuda.is_available():
@@ -184,6 +235,8 @@ class BaseModel(pl.LightningModule):
             trainer_kwargs["enable_checkpointing"] = False
 
         self.trainer_kwargs = trainer_kwargs
+
+        self.best_loss = -np.inf
 
     def __repr__(self):
         return type(self).__name__ if self.alias is None else self.alias
@@ -423,8 +476,16 @@ class BaseModel(pl.LightningModule):
         losses = torch.stack(self.validation_step_outputs)
         avg_loss = losses.mean().item()
         self.log(
-            "ptl/val_loss",
+            "valid_loss",
             avg_loss,
+            batch_size=losses.size(0),
+            sync_dist=True,
+        )
+        if avg_loss < self.best_loss:
+            self.best_loss = avg_loss
+        self.log(
+            "best_valid_loss",
+            self.best_loss,
             batch_size=losses.size(0),
             sync_dist=True,
         )
