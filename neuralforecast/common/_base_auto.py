@@ -11,9 +11,12 @@ from os import cpu_count
 import torch
 import pytorch_lightning as pl
 
-from ray import air, tune
+from ray import air, tune, train
 from ray.tune.integration.pytorch_lightning import TuneReportCallback
 from ray.tune.search.basic_variant import BasicVariantGenerator
+
+from os.path import join, abspath
+from os import getcwd
 
 # %% ../../nbs/common.base_auto.ipynb 6
 class MockTrial:
@@ -100,6 +103,11 @@ class BaseAuto(pl.LightningModule):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
         super(BaseAuto, self).__init__()
         with warnings.catch_warnings(record=False):
@@ -180,6 +188,12 @@ class BaseAuto(pl.LightningModule):
         # Base Class attributes
         self.SAMPLING_TYPE = cls_model.SAMPLING_TYPE
 
+        self.resources_dict = resources_dict
+        self.max_concurrent = max_concurrent
+        self.exp_name = exp_name
+        self.storage_path = storage_path
+        self.time_budget_s = time_budget_s
+
     def __repr__(self):
         return type(self).__name__ if self.alias is None else self.alias
 
@@ -197,7 +211,10 @@ class BaseAuto(pl.LightningModule):
         `val_size`: int, validation size for temporal cross-validation.<br>
         `test_size`: int, test size for temporal cross-validation.<br>
         """
-        metrics = {"loss": "ptl/val_loss", "train_loss": "train_loss"}
+        if "log_best_valid_loss" in config_step and config_step["log_best_valid_loss"]:
+            metrics = {"objective": "best_valid_loss", "valid_loss": "valid_loss", "train_loss": "train_loss"}
+        else:
+            metrics = {"objective": "valid_loss", "valid_loss": "valid_loss", "train_loss": "train_loss"} 
         callbacks = [TuneReportCallback(metrics, on="validation_end")]
         if "callbacks" in config_step.keys():
             callbacks.extend(config_step["callbacks"])
@@ -231,6 +248,11 @@ class BaseAuto(pl.LightningModule):
         num_samples,
         search_alg,
         config,
+        resources_dict,
+        max_concurrent,
+        exp_name,
+        storage_path,
+        time_budget_s,
     ):
         train_fn_with_parameters = tune.with_parameters(
             self._train_tune,
@@ -239,12 +261,13 @@ class BaseAuto(pl.LightningModule):
             val_size=val_size,
             test_size=test_size,
         )
-
-        # Device
-        if gpus > 0:
-            device_dict = {"gpu": gpus}
-        else:
-            device_dict = {"cpu": cpus}
+        
+        if resources_dict is None:
+            # Device
+            if gpus > 0:
+                resources_dict = {"gpu": gpus}
+            else:
+                resources_dict = {"cpu": cpus}
 
         # on Windows, prevent long trial directory names
         import platform
@@ -255,15 +278,43 @@ class BaseAuto(pl.LightningModule):
             else None
         )
 
+        # tuner = tune.Tuner(
+        #     tune.with_resources(train_fn_with_parameters, resources_dict),
+        #     run_config=air.RunConfig(callbacks=self.callbacks, verbose=verbose),
+        #     tune_config=tune.TuneConfig(
+        #         metric="loss",
+        #         mode="min",
+        #         num_samples=num_samples,
+        #         search_alg=search_alg,
+        #         trial_dirname_creator=trial_dirname_creator,
+        #     ),
+        #     param_space=config,
+        # )
         tuner = tune.Tuner(
-            tune.with_resources(train_fn_with_parameters, device_dict),
-            run_config=air.RunConfig(callbacks=self.callbacks, verbose=verbose),
+            tune.with_resources(train_fn_with_parameters, resources_dict),
+            # run_config=air.RunConfig(callbacks=self.callbacks, verbose=verbose),
             tune_config=tune.TuneConfig(
-                metric="loss",
-                mode="min",
-                num_samples=num_samples,
+                metric="objective", # Metric to optimize. This metric should be reported with `tune.report()`. If set, will be passed to the search algorithm and scheduler.
+                mode="min", # Must be one of [min, max]. Determines whether objective is minimizing or maximizing the metric attribute. If set, will be passed to the search algorithm and scheduler.
+                # Search algorithm for optimization. Default to random search.
                 search_alg=search_alg,
-                trial_dirname_creator=trial_dirname_creator,
+                num_samples=num_samples, # Number of times to sample from the hyperparameter space.
+                max_concurrent_trials=max_concurrent, # Not needed in this setting since only one GPU is available and the trainable parameter of this class is defined in this way
+                time_budget_s=time_budget_s, # Global time budget in seconds after which all trials are stopped.
+                reuse_actors=False, #  Whether to reuse actors between different trials when possible. This can drastically speed up experiments that start and stop actors often (e.g., PBT in time-multiplexing mode). This requires trials to have the same resource requirements.
+                trial_name_creator=lambda trial: f"trial-{trial.trial_id}", # Optional function that takes in a Trial and returns its name (i.e. its string representation). Be sure to include some unique identifier (such as `Trial.trial_id`) in each trial's name.
+                trial_dirname_creator=trial_dirname_creator, # Optional function that takes in a trial and generates its trial directory name as a string. Be sure to include some unique identifier (such as `Trial.trial_id`) is used in each trial's directory name.
+            ),
+            # Runtime configuration that is specific to individual trials. If passed, this will overwrite the run config passed to the Trainer (trainable parameter), if applicable.
+            # Upon resuming from a training or tuning run checkpoint, Ray Train/Tune will automatically apply the RunConfig from the previously checkpointed run.
+            run_config=train.RunConfig(
+                name=exp_name, # Name of the trial or experiment. If not provided, will be deduced from the Trainable
+                storage_path=storage_path, # Path where all results and checkpoints are persisted. Can be a local directory or a destination on cloud storage.
+                failure_config=None, # Failure mode configuration.
+                sync_config=None, # Configuration object for syncing. See train.SyncConfig.
+                # stop={OBJECTIVE:0.8}, # Stop conditions to consider. Refer to ray.tune.stopper.Stopper for more info. Stoppers should be serializable.
+                callbacks=self.callbacks,
+                verbose=verbose,
             ),
             param_space=config,
         )
@@ -411,6 +462,11 @@ class BaseAuto(pl.LightningModule):
                 num_samples=self.num_samples,
                 search_alg=search_alg,
                 config=self.config,
+                resources_dict=self.resources_dict,
+                max_concurrent=self.max_concurrent,
+                exp_name=self.exp_name,
+                storage_path=self.storage_path,
+                time_budget_s=self.time_budget_s,
             )
             best_config = results.get_best_result().config
         else:
