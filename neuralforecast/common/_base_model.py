@@ -170,15 +170,15 @@ class BaseModel(pl.LightningModule):
         if "max_epochs" in trainer_kwargs.keys():
             raise Exception("max_epochs is deprecated, use max_steps instead.")
 
-        # Callbacks
-        if early_stop_patience_steps > 0:
-            if "callbacks" not in trainer_kwargs:
-                trainer_kwargs["callbacks"] = []
-            trainer_kwargs["callbacks"].append(
-                EarlyStopping(
-                    monitor="ptl/val_loss", patience=early_stop_patience_steps
-                )
-            )
+        # # Callbacks
+        # if early_stop_patience_steps > 0:
+        #     if "callbacks" not in trainer_kwargs:
+        #         trainer_kwargs["callbacks"] = []
+        #     trainer_kwargs["callbacks"].append(
+        #         EarlyStopping(
+        #             monitor="ptl/val_loss", patience=early_stop_patience_steps
+        #         )
+        #     )
 
         # Callbacks
         if early_stop_patience_steps > 0:
