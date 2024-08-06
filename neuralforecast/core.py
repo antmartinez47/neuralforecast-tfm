@@ -421,24 +421,19 @@ class NeuralForecast:
             time_col=time_col,
             target_col=target_col,
         )
-
-    def fit(
+    
+    def update_data(
         self,
         df: Optional[Union[DataFrame, SparkDataFrame, Sequence[str]]] = None,
         static_df: Optional[Union[DataFrame, SparkDataFrame]] = None,
-        val_size: Optional[int] = 0,
         sort_df: bool = True,
-        use_init_models: bool = False,
         verbose: bool = False,
         id_col: str = "unique_id",
         time_col: str = "ds",
         target_col: str = "y",
         distributed_config: Optional[DistributedConfig] = None,
     ) -> None:
-        """Fit the core.NeuralForecast.
-
-        Fit `models` to a large set of time series from DataFrame `df`.
-        and store fitted models for later inspection.
+        """Updates the stored dataframe in core.NeuralForecast.
 
         Parameters
         ----------
@@ -447,12 +442,8 @@ class NeuralForecast:
             If None, a previously stored dataset is required.
         static_df : pandas, polars or spark DataFrame, optional (default=None)
             DataFrame with columns [`unique_id`] and static exogenous.
-        val_size : int, optional (default=0)
-            Size of validation set.
         sort_df : bool, optional (default=False)
             Sort `df` before fitting.
-        use_init_models : bool, optional (default=False)
-            Use initial model passed when NeuralForecast object was instantiated.
         verbose : bool (default=False)
             Print processing steps.
         id_col : str (default='unique_id')
@@ -466,18 +457,8 @@ class NeuralForecast:
 
         Returns
         -------
-        self : NeuralForecast
-            Returns `NeuralForecast` class with fitted `models`.
+        None
         """
-        if (df is None) and not (hasattr(self, "dataset")):
-            raise Exception("You must pass a DataFrame or have one stored.")
-
-        # Model and datasets interactions protections
-        if (
-            any(model.early_stop_patience_steps > 0 for model in self.models)
-            and val_size == 0
-        ):
-            raise Exception("Set val_size>0 if early stopping is enabled.")
 
         # Process and save new dataset (in self)
         if isinstance(df, (pd.DataFrame, pl_DataFrame)):
@@ -527,6 +508,74 @@ class NeuralForecast:
         else:
             raise ValueError(
                 f"`df` must be a pandas, polars or spark DataFrame, or a list of parquet files containing the series, or `None`, got: {type(df)}"
+            )
+
+    def fit(
+        self,
+        df: Optional[Union[DataFrame, SparkDataFrame, Sequence[str]]] = None,
+        static_df: Optional[Union[DataFrame, SparkDataFrame]] = None,
+        val_size: Optional[int] = 0,
+        sort_df: bool = True,
+        use_init_models: bool = False,
+        verbose: bool = False,
+        id_col: str = "unique_id",
+        time_col: str = "ds",
+        target_col: str = "y",
+        distributed_config: Optional[DistributedConfig] = None,
+    ) -> None:
+        """Fit the core.NeuralForecast.
+
+        Fit `models` to a large set of time series from DataFrame `df`.
+        and store fitted models for later inspection.
+
+        Parameters
+        ----------
+        df : pandas, polars or spark DataFrame, or a list of parquet files containing the series, optional (default=None)
+            DataFrame with columns [`unique_id`, `ds`, `y`] and exogenous variables.
+            If None, a previously stored dataset is required.
+        static_df : pandas, polars or spark DataFrame, optional (default=None)
+            DataFrame with columns [`unique_id`] and static exogenous.
+        val_size : int, optional (default=0)
+            Size of validation set.
+        sort_df : bool, optional (default=False)
+            Sort `df` before fitting.
+        use_init_models : bool, optional (default=False)
+            Use initial model passed when NeuralForecast object was instantiated.
+        verbose : bool (default=False)
+            Print processing steps.
+        id_col : str (default='unique_id')
+            Column that identifies each serie.
+        time_col : str (default='ds')
+            Column that identifies each timestep, its values can be timestamps or integers.
+        target_col : str (default='y')
+            Column that contains the target.
+        distributed_config : neuralforecast.DistributedConfig
+            Configuration to use for DDP training. Currently only spark is supported.
+
+        Returns
+        -------
+        None
+        """
+        if (df is None) and not (hasattr(self, "dataset")):
+            raise Exception("You must pass a DataFrame or have one stored.")
+
+        # Model and datasets interactions protections
+        if (
+            any(model.early_stop_patience_steps > 0 for model in self.models)
+            and val_size == 0
+        ):
+            raise Exception("Set val_size>0 if early stopping is enabled.")
+
+        # Process and save new dataset (in self)
+        self.update_data(
+            df=df,
+            static_df=static_df,
+            sort_df=sort_df,
+            verbose=verbose,
+            id_col=id_col,
+            time_col=time_col,
+            target_col=target_col,
+            distributed_config=distributed_config
             )
 
         if val_size is not None:
