@@ -55,6 +55,9 @@ from .models.timemixer import TimeMixer
 
 from .losses.pytorch import MAE, MQLoss, DistributionLoss
 
+from os.path import join, abspath
+from os import getcwd
+
 # %% ../nbs/models.ipynb 13
 class AutoRNN(BaseAuto):
 
@@ -88,6 +91,11 @@ class AutoRNN(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
         """Auto RNN
 
@@ -113,6 +121,11 @@ class AutoRNN(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -163,6 +176,11 @@ class AutoLSTM(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -184,6 +202,11 @@ class AutoLSTM(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -234,6 +257,11 @@ class AutoGRU(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -255,6 +283,11 @@ class AutoGRU(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -304,6 +337,11 @@ class AutoTCN(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -325,6 +363,11 @@ class AutoTCN(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -377,6 +420,11 @@ class AutoDeepAR(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -398,6 +446,11 @@ class AutoDeepAR(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -447,6 +500,11 @@ class AutoDilatedRNN(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -468,6 +526,11 @@ class AutoDilatedRNN(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -517,6 +580,11 @@ class AutoBiTCN(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -538,6 +606,11 @@ class AutoBiTCN(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -585,6 +658,11 @@ class AutoMLP(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -606,6 +684,11 @@ class AutoMLP(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -651,6 +734,11 @@ class AutoNBEATS(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -672,6 +760,11 @@ class AutoNBEATS(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -717,6 +810,11 @@ class AutoNBEATSx(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -738,6 +836,11 @@ class AutoNBEATSx(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -796,6 +899,11 @@ class AutoNHITS(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -817,6 +925,11 @@ class AutoNHITS(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -863,6 +976,11 @@ class AutoDLinear(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -884,6 +1002,11 @@ class AutoDLinear(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -929,6 +1052,11 @@ class AutoNLinear(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -950,6 +1078,11 @@ class AutoNLinear(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -1003,6 +1136,11 @@ class AutoTiDE(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -1024,6 +1162,11 @@ class AutoTiDE(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -1072,6 +1215,11 @@ class AutoDeepNPTS(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -1093,6 +1241,11 @@ class AutoDeepNPTS(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -1141,6 +1294,11 @@ class AutoKAN(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -1162,6 +1320,11 @@ class AutoKAN(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -1209,6 +1372,11 @@ class AutoTFT(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -1230,6 +1398,11 @@ class AutoTFT(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -1277,6 +1450,11 @@ class AutoVanillaTransformer(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -1298,6 +1476,11 @@ class AutoVanillaTransformer(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -1345,6 +1528,11 @@ class AutoInformer(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -1366,6 +1554,11 @@ class AutoInformer(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -1413,6 +1606,11 @@ class AutoAutoformer(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -1434,6 +1632,11 @@ class AutoAutoformer(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -1480,6 +1683,11 @@ class AutoFEDformer(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -1501,6 +1709,11 @@ class AutoFEDformer(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -1550,6 +1763,11 @@ class AutoPatchTST(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -1571,6 +1789,11 @@ class AutoPatchTST(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -1619,6 +1842,11 @@ class AutoiTransformer(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -1651,6 +1879,11 @@ class AutoiTransformer(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -1703,6 +1936,11 @@ class AutoTimesNet(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -1724,6 +1962,11 @@ class AutoTimesNet(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -1772,6 +2015,11 @@ class AutoStemGNN(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -1804,6 +2052,11 @@ class AutoStemGNN(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -1844,6 +2097,11 @@ class AutoHINT(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         super(AutoHINT, self).__init__(
@@ -1861,6 +2119,11 @@ class AutoHINT(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
         if backend == "optuna":
             raise Exception("Optuna is not supported for AutoHINT.")
@@ -1930,6 +2193,11 @@ class AutoTSMixer(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -1962,6 +2230,11 @@ class AutoTSMixer(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -2016,6 +2289,11 @@ class AutoTSMixerx(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -2048,6 +2326,11 @@ class AutoTSMixerx(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -2101,6 +2384,11 @@ class AutoMLPMultivariate(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -2133,6 +2421,11 @@ class AutoMLPMultivariate(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -2186,6 +2479,11 @@ class AutoSOFTS(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -2218,6 +2516,11 @@ class AutoSOFTS(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
@@ -2272,6 +2575,11 @@ class AutoTimeMixer(BaseAuto):
         alias=None,
         backend="ray",
         callbacks=None,
+        resources_dict=None,
+        max_concurrent=None,
+        exp_name="my_tune_experiment",
+        storage_path=abspath(join(getcwd(), "ray_results")),
+        time_budget_s=None,
     ):
 
         # Define search space, input/output sizes
@@ -2304,6 +2612,11 @@ class AutoTimeMixer(BaseAuto):
             alias=alias,
             backend=backend,
             callbacks=callbacks,
+            resources_dict=resources_dict,
+            max_concurrent=max_concurrent,
+            exp_name=exp_name,
+            storage_path=storage_path,
+            time_budget_s=time_budget_s,
         )
 
     @classmethod
